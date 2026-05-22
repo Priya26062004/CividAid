@@ -1,0 +1,6 @@
+.auth-footer-text {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--surface-500);
+}

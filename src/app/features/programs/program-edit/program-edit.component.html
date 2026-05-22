@@ -1,0 +1,77 @@
+<div class="page-container">
+  <div class="page-header">
+    <button class="btn btn-secondary btn-sm" (click)="goBack()" id="program-edit-back-btn" type="button">← Back</button>
+    <h1>Edit Program</h1>
+    <p class="subtitle">Update program details</p>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state"><div class="spinner"></div> Loading program…</div>
+  } @else {
+    <div class="form-card">
+      @if (successMsg) {
+        <div class="alert alert-success">{{ successMsg }}</div>
+      }
+      @if (errorMsg) {
+        <div class="alert alert-danger">{{ errorMsg }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="edit-prog-title">Program Title *</label>
+            <input id="edit-prog-title" formControlName="title" class="form-control" placeholder="Program title" />
+            @if (isInvalid('title')) {
+              <span class="error-text">Title is required</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="edit-prog-status">Status *</label>
+            <select id="edit-prog-status" formControlName="status" class="form-control">
+              @for (s of statuses; track s) {
+                <option [value]="s">{{ s }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="edit-prog-desc">Description</label>
+            <textarea id="edit-prog-desc" formControlName="description" class="form-control" rows="4" placeholder="Program description"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-prog-start">Start Date *</label>
+            <input id="edit-prog-start" type="date" formControlName="startDate" class="form-control" />
+            @if (isInvalid('startDate')) {
+              <span class="error-text">Start date is required</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="edit-prog-end">End Date *</label>
+            <input id="edit-prog-end" type="date" formControlName="endDate" class="form-control" />
+            @if (isInvalid('endDate')) {
+              <span class="error-text">End date is required</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="edit-prog-budget">Budget (₹) *</label>
+            <input id="edit-prog-budget" type="number" formControlName="budget" class="form-control" placeholder="0" />
+            @if (isInvalid('budget')) {
+              <span class="error-text">Budget is required and must be ≥ 0</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-secondary" type="button" (click)="goBack()">Cancel</button>
+          <button class="btn btn-primary" type="submit" [disabled]="saving" id="program-edit-submit-btn">
+            @if (saving) { <span class="spinner-sm"></span> Saving… } @else { Save Changes }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

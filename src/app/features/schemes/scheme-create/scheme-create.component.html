@@ -1,0 +1,131 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Create Scheme</h1>
+      <p class="page-subtitle">Add a new welfare scheme to an existing program</p>
+    </div>
+    <button class="btn btn-secondary" (click)="goBack()" id="scheme-create-back">← Back</button>
+  </div>
+
+  @if (successMsg) {
+    <div class="alert alert-success" role="status">{{ successMsg }}</div>
+  }
+  @if (errorMsg) {
+    <div class="alert alert-error" role="alert">{{ errorMsg }}</div>
+  }
+
+  <div class="form-layout">
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Scheme Information</h2>
+        <p class="card-subtitle">Fill in the details for the new scheme</p>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="create-program-id">
+              Parent Program <span class="required">*</span>
+            </label>
+            <select id="create-program-id" formControlName="programId"
+                    class="form-control form-select" [class.is-invalid]="isInvalid('programId')">
+              <option [ngValue]="null">Select an active program</option>
+              @for (program of programs; track program.programId) {
+                <option [ngValue]="program.programId">
+                  #{{ program.programId }} — {{ program.title }}
+                </option>
+              }
+            </select>
+            @if (isInvalid('programId')) {
+              <div class="form-error">Please select a program</div>
+            }
+            @if (programs.length === 0) {
+              <div class="form-hint">No active programs found. Create a program first.</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="create-title">
+              Scheme Title <span class="required">*</span>
+            </label>
+            <input type="text" id="create-title" formControlName="title"
+                   class="form-control" [class.is-invalid]="isInvalid('title')"
+                   placeholder="e.g., Housing Assistance for Below Poverty Line Families">
+            @if (isInvalid('title')) {
+              <div class="form-error">Title must be at least 3 characters</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="create-desc">Description</label>
+            <textarea id="create-desc" formControlName="description"
+                      class="form-control" rows="4"
+                      placeholder="Describe what this scheme provides and its goals…"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="create-budget">
+              Budget <span class="required">*</span>
+            </label>
+            <input type="number" id="create-budget" formControlName="budget"
+                   class="form-control" min="1"
+                   [class.is-invalid]="isInvalid('budget')"
+                   placeholder="Enter the total scheme budget amount">
+            @if (isInvalid('budget')) {
+              <div class="form-error">Budget is required and must be at least 1</div>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="create-criteria">
+              Eligibility Criteria <span class="required">*</span>
+            </label>
+            <textarea id="create-criteria" formControlName="eligibilityCriteria"
+                      class="form-control" rows="5"
+                      [class.is-invalid]="isInvalid('eligibilityCriteria')"
+                      placeholder="List the criteria citizens must meet to be eligible for this scheme. Be specific about income limits, age ranges, family size, etc."></textarea>
+            @if (isInvalid('eligibilityCriteria')) {
+              <div class="form-error">Eligibility criteria is required</div>
+            }
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" (click)="goBack()">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-lg"
+                    [disabled]="saving || form.invalid"
+                    id="scheme-create-submit">
+              @if (saving) {
+                <div class="spinner" style="width:18px;height:18px;border-width:2px;"></div>
+                <span>Creating…</span>
+              } @else {
+                Create Scheme
+              }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Help Card -->
+    <div class="help-card card">
+      <div class="card-header">
+        <h3 class="card-title">Tips</h3>
+      </div>
+      <div class="card-body">
+        <ul class="tips-list">
+          <li>
+            <strong>Title:</strong> Use a clear, descriptive name that tells citizens what the scheme offers.
+          </li>
+          <li>
+            <strong>Eligibility:</strong> Be specific about income limits, age ranges, domicile requirements, and family size.
+          </li>
+          <li>
+            <strong>Description:</strong> Explain the benefits, amounts, and duration of support provided.
+          </li>
+          <li>
+            <strong>Program:</strong> Only active programs are shown. Ensure the parent program is active before creating a scheme.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

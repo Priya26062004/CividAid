@@ -1,0 +1,80 @@
+<div class="page-container">
+  <div class="page-header">
+    <button class="btn btn-secondary btn-sm" (click)="goBack()" id="scheme-edit-back-btn" type="button">← Back</button>
+    <h1>Edit Scheme</h1>
+    <p class="subtitle">Update scheme details</p>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state"><div class="spinner"></div> Loading scheme…</div>
+  } @else {
+    <div class="form-card">
+      @if (successMsg) {
+        <div class="alert alert-success">{{ successMsg }}</div>
+      }
+      @if (errorMsg) {
+        <div class="alert alert-danger">{{ errorMsg }}</div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          
+          <div class="form-group full-width">
+            <label for="edit-scheme-program">Parent Program *</label>
+            <select id="edit-scheme-program" formControlName="programId" class="form-control">
+              <option [ngValue]="null" disabled>Select a Program...</option>
+              @for (p of programs; track p.programId) {
+                <option [ngValue]="p.programId">{{ p.title }}</option>
+              }
+            </select>
+            @if (isInvalid('programId')) {
+              <span class="error-text">Parent program is required</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="edit-scheme-title">Scheme Title *</label>
+            <input id="edit-scheme-title" formControlName="title" class="form-control" placeholder="Scheme title" />
+            @if (isInvalid('title')) {
+              <span class="error-text">Title is required</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="edit-scheme-status">Status *</label>
+            <select id="edit-scheme-status" formControlName="status" class="form-control">
+              @for (s of statuses; track s) {
+                <option [value]="s">{{ s }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="edit-scheme-desc">Description</label>
+            <textarea id="edit-scheme-desc" formControlName="description" class="form-control" rows="3" placeholder="Scheme description"></textarea>
+          </div>
+
+          <div class="form-group full-width">
+            <label for="edit-scheme-eligibility">Eligibility Criteria</label>
+            <textarea id="edit-scheme-eligibility" formControlName="eligibilityCriteria" class="form-control" rows="3" placeholder="Eligibility criteria"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="edit-scheme-budget">Budget (₹) *</label>
+            <input id="edit-scheme-budget" type="number" formControlName="budget" class="form-control" placeholder="0" />
+            @if (isInvalid('budget')) {
+              <span class="error-text">Budget is required and must be ≥ 0</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-secondary" type="button" (click)="goBack()">Cancel</button>
+          <button class="btn btn-primary" type="submit" [disabled]="saving" id="scheme-edit-submit-btn">
+            @if (saving) { <span class="spinner-sm"></span> Saving… } @else { Save Changes }
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

@@ -1,0 +1,95 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Disbursements</h1>
+      <p class="page-subtitle">Track and manage fund disbursements</p>
+    </div>
+  </div>
+
+  @if (canCreate) {
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3 style="font-weight:700;font-size:1rem;">Create Disbursement</h3>
+      </div>
+      <div class="card-body">
+        @if (errorMessage) {
+          <div class="alert alert-error" role="alert">{{ errorMessage }}</div>
+        }
+        <div class="grid-3">
+          <div class="form-group">
+            <label class="form-label" for="disb-app-id">Application ID</label>
+            <select id="disb-app-id" class="form-control" [(ngModel)]="newDisb.applicationId" (change)="onApplicationChange()">
+              <option [ngValue]="0" disabled>Select Application</option>
+              @for (app of applications; track app.applicationId) {
+                <option [ngValue]="app.applicationId">App #{{ app.applicationId }} (Citizen #{{ app.citizenId }})</option>
+              }
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="disb-citizen-id">Citizen ID</label>
+            <input type="number" id="disb-citizen-id" class="form-control" [(ngModel)]="newDisb.citizenId" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="disb-amount">Amount (₹)</label>
+            <input type="number" id="disb-amount" class="form-control" [(ngModel)]="newDisb.amount">
+          </div>
+        </div>
+        <button class="btn btn-primary" (click)="createDisbursement()" id="disb-create-btn" [disabled]="!isFormValid">Create Disbursement</button>
+      </div>
+    </div>
+  }
+
+  @if (loading) {
+    <app-loader />
+  } @else if (disbursements.length === 0) {
+    <div class="empty-state">
+      <h3>No disbursements found</h3>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Citizen ID</th>
+            <th>Application ID</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+            @if (canUpdate) {
+              <th>Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (d of disbursements; track d.disbursementId) {
+            <tr>
+              <td><strong>#{{ d.disbursementId }}</strong></td>
+              <td>{{ d.citizenId }}</td>
+              <td>{{ d.applicationId }}</td>
+              <td>₹{{ d.amount | number }}</td>
+              <td>{{ d.date }}</td>
+              <td><span class="badge" [ngClass]="getStatusClass(d.status)">{{ d.status }}</span></td>
+              @if (canUpdate) {
+                <td>
+                  <div class="flex-gap">
+                    <select class="form-control form-select" style="width:auto;padding:4px 8px;font-size:0.8rem;"
+                            [(ngModel)]="statusUpdates[d.disbursementId]" [id]="'disb-status-' + d.disbursementId">
+                      <option value="PENDING">PENDING</option>
+                      <option value="PROCESSED">PROCESSED</option>
+                      <option value="FAILED">FAILED</option>
+                      <option value="CANCELLED">CANCELLED</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm" (click)="updateStatus(d.disbursementId)" [id]="'disb-update-' + d.disbursementId">Update</button>
+                    <button class="btn btn-secondary btn-sm" (click)="viewPayments(d.disbursementId)" [id]="'disb-payments-' + d.disbursementId">Payments</button>
+                  </div>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+

@@ -1,0 +1,185 @@
+/* ── Payment Processing Styles ── */
+
+.section-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--surface-800);
+}
+
+/* ── Inline inputs inside table ── */
+.amount-input {
+  max-width: 140px;
+  padding: 7px 10px;
+  font-size: 0.85rem;
+}
+
+.method-select {
+  max-width: 160px;
+  padding: 7px 10px;
+  font-size: 0.85rem;
+}
+
+/* ── Row States ── */
+.processing-row {
+  background: var(--primary-50) !important;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.completed-row {
+  background: #d1fae5 !important;
+  animation: rowFadeOut 2s ease-out forwards;
+}
+
+@keyframes rowFadeOut {
+  0% { background: #d1fae5; }
+  70% { background: #d1fae5; }
+  100% { background: transparent; opacity: 0.5; }
+}
+
+.processing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary-600);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ── Alert dismiss button ── */
+.alert {
+  position: relative;
+}
+
+.alert-dismiss {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+  line-height: 1;
+}
+
+.alert-dismiss:hover {
+  opacity: 1;
+}
+
+/* ── Empty State Card ── */
+.empty-state-card {
+  text-align: center;
+}
+
+.empty-state-card .empty-state svg {
+  margin-bottom: 16px;
+}
+
+.empty-state-card .empty-state h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--surface-700);
+  margin-bottom: 8px;
+}
+
+.empty-state-card .empty-state p {
+  color: var(--surface-500);
+  font-size: 0.95rem;
+}
+
+/* ── Confirmation Modal Overlay ── */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+
+.confirm-modal {
+  max-width: 480px;
+  width: 100%;
+  padding: 36px 32px;
+  text-align: center;
+}
+
+.confirm-icon {
+  margin-bottom: 16px;
+}
+
+.confirm-modal h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--surface-900);
+  margin-bottom: 8px;
+}
+
+.confirm-detail {
+  color: var(--surface-600);
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.confirm-summary {
+  background: var(--surface-50);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.95rem;
+  color: var(--surface-700);
+}
+
+.confirm-row + .confirm-row {
+  border-top: 1px solid var(--surface-200);
+}
+
+.confirm-warning {
+  font-size: 0.85rem;
+  color: var(--surface-500);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.confirm-actions .btn {
+  min-width: 140px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .amount-input,
+  .method-select {
+    max-width: 100%;
+  }
+
+  .confirm-modal {
+    padding: 24px 20px;
+  }
+
+  .confirm-actions {
+    flex-direction: column;
+  }
+
+  .confirm-actions .btn {
+    width: 100%;
+  }
+}

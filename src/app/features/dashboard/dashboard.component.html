@@ -1,0 +1,140 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-subtitle">Welcome back, {{ userEmail }}</p>
+    </div>
+    <span class="badge badge-primary role-badge">{{ userRole }}</span>
+  </div>
+
+  @if (loading) {
+    <app-loader />
+  } @else {
+
+    <!-- ── Officer / Admin view ── -->
+    @if (isOfficer) {
+      <div class="stats-grid">
+        <div class="stat-card">
+          <p class="stat-label">Total Users</p>
+          <p class="stat-value">{{ stats.totalUsers }}</p>
+        </div>
+        <div class="stat-card accent">
+          <p class="stat-label">Total Citizens</p>
+          <p class="stat-value">{{ stats.totalCitizens }}</p>
+        </div>
+        <div class="stat-card warn">
+          <p class="stat-label">Active Programs</p>
+          <p class="stat-value">{{ stats.totalPrograms }}</p>
+        </div>
+        <div class="stat-card danger">
+          <p class="stat-label">Applications</p>
+          <p class="stat-value">{{ stats.totalApplications }}</p>
+        </div>
+      </div>
+
+      @if (recentApplications.length > 0) {
+        <div class="card">
+          <div class="card-header flex-between">
+            <h3 class="card-title">Recent Applications</h3>
+            <button class="btn btn-secondary btn-sm" (click)="navigate('/applications')" id="dash-view-all-apps">
+              View All
+            </button>
+          </div>
+          <div class="table-container" style="border:none;border-radius:0;">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Citizen ID</th>
+                  <th>Program ID</th>
+                  <th>Submitted</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (app of recentApplications; track app.applicationId) {
+                  <tr>
+                    <td><strong>#{{ app.applicationId }}</strong></td>
+                    <td>{{ app.citizenId }}</td>
+                    <td>{{ app.programId }}</td>
+                    <td>{{ app.submittedDate }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="getStatusBadge(app.status)">{{ app.status }}</span>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- ── Citizen view ── -->
+    @if (isCitizen) {
+      <div class="stats-grid">
+        <div class="stat-card">
+          <p class="stat-label">My Applications</p>
+          <p class="stat-value">{{ stats.totalApplications }}</p>
+        </div>
+        <div class="stat-card accent">
+          <p class="stat-label">Available Programs</p>
+          <p class="stat-value">{{ stats.totalPrograms }}</p>
+        </div>
+        <div class="stat-card warn">
+          <p class="stat-label">Unread Notifications</p>
+          <p class="stat-value">{{ stats.unreadNotifications }}</p>
+        </div>
+      </div>
+
+      <div class="quick-actions-grid">
+        <div class="quick-card" (click)="navigate('/programs')" id="dash-goto-programs" role="button" tabindex="0">
+          <div class="quick-card-icon programs-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <h3>Browse Programs</h3>
+          <p>View all available welfare programs</p>
+        </div>
+
+        <div class="quick-card" (click)="navigate('/schemes')" id="dash-goto-schemes" role="button" tabindex="0">
+          <div class="quick-card-icon schemes-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+              <rect x="9" y="3" width="6" height="4" rx="1"/>
+              <line x1="9" y1="12" x2="15" y2="12"/>
+              <line x1="9" y1="16" x2="13" y2="16"/>
+            </svg>
+          </div>
+          <h3>Browse Schemes</h3>
+          <p>View schemes &amp; eligibility criteria</p>
+        </div>
+
+        <div class="quick-card" (click)="navigate('/applications')" id="dash-goto-applications" role="button" tabindex="0">
+          <div class="quick-card-icon apps-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <h3>My Applications</h3>
+          <p>Track your application status</p>
+        </div>
+
+        <div class="quick-card" (click)="navigate('/citizens')" id="dash-goto-profile" role="button" tabindex="0">
+          <div class="quick-card-icon profile-icon">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+          </div>
+          <h3>My Profile</h3>
+          <p>View and update your citizen profile</p>
+        </div>
+      </div>
+    }
+  }
+</div>

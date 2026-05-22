@@ -1,0 +1,137 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Applications</h1>
+      <p class="page-subtitle">{{ isCitizen ? 'Your welfare applications' : 'All welfare applications' }}</p>
+    </div>
+    @if (canCreate) {
+      <button class="btn btn-primary" (click)="createApp()" id="app-create-new-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New Application
+      </button>
+    }
+  </div>
+
+  @if (loading) {
+    <app-loader />
+  } @else if (applications.length === 0) {
+    <div class="empty-state">
+      <h3>No applications found</h3>
+      <p>{{ isCitizen ? "You haven't submitted any applications yet." : 'No applications in the system.' }}</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Citizen ID</th>
+            <th>Program ID</th>
+            <th>Submitted Date</th>
+            <th>Status</th>
+            @if (canUpdateStatus) {
+              <th>Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (app of applications; track app.applicationId) {
+            <tr>
+              <td><strong>#{{ app.applicationId }}</strong></td>
+              <td>{{ app.citizenId }}</td>
+              <td>{{ app.programId }}</td>
+              <td>{{ app.submittedDate }}</td>
+              <td>
+                <span class="badge" [ngClass]="getStatusBadge(app.status)">{{ app.status }}</span>
+              </td>
+              @if (canUpdateStatus) {
+                <td>
+                  <div class="flex-gap">
+                    <select class="form-control form-select status-select"
+                            [(ngModel)]="statusUpdates[app.applicationId]"
+                            [id]="'app-status-select-' + app.applicationId">
+                      <option value="PENDING">PENDING</option>
+                      <option value="UNDER_REVIEW">UNDER_REVIEW</option>
+                      <option value="APPROVED">APPROVED</option>
+                      <option value="REJECTED">REJECTED</option>
+                      <option value="DISBURSED">DISBURSED</option>
+                    </select>
+                    <button class="btn btn-primary btn-sm"
+                            (click)="updateStatus(app.applicationId)"
+                            [id]="'app-status-update-' + app.applicationId">
+                      Update
+                    </button>
+                    <button class="btn btn-secondary btn-sm"
+                            (click)="viewEligibility(app.applicationId, app.programId)"
+                            [id]="'app-view-elig-' + app.applicationId">
+                      Eligibility
+                    </button>
+                  </div>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (eligibilityOpen) {
+  <div class="eligibility-overlay" (click)="closeEligibility()" role="presentation">
+    <div class="eligibility-panel card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true"
+         [attr.aria-labelledby]="'elig-dialog-title'">
+      <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+        <h3 id="elig-dialog-title" style="margin:0;font-size:1rem;font-weight:700;">
+          Eligibility — Application #{{ eligibilityApplicationId }} (Program #{{ eligibilityProgramId }})
+        </h3>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="closeEligibility()" id="elig-close-btn">Close</button>
+      </div>
+      <div class="card-body">
+        @if (eligibilityLoading) {
+          <app-loader />
+        } @else {
+          @if (eligibilityLoadError) {
+            <p class="alert alert-error" role="alert">{{ eligibilityLoadError }}</p>
+          }
+          <section class="eligibility-section">
+            <h4 class="section-heading">Scheme eligibility (from program)</h4>
+            <p class="section-hint">Official criteria defined on each scheme under this program.</p>
+            @if (eligibilitySchemes.length === 0) {
+              <p class="text-muted">No schemes found for this program, or criteria are not available.</p>
+            } @else {
+              <ul class="eligibility-scheme-list">
+                @for (s of eligibilitySchemes; track s.schemeId) {
+                  <li class="eligibility-scheme-item">
+                    <strong>{{ s.title }}</strong>
+                    <span class="badge badge-neutral" style="margin-left:8px;">{{ s.status }}</span>
+                    <p class="eligibility-criteria-text">{{ s.eligibilityCriteria || 'No eligibility criteria text on this scheme.' }}</p>
+                  </li>
+                }
+              </ul>
+            }
+          </section>
+          <section class="eligibility-section">
+            <h4 class="section-heading">Officer eligibility checks</h4>
+            <p class="section-hint">Recorded reviews for this application.</p>
+            @if (eligibilityChecks.length === 0) {
+              <p class="text-muted">No eligibility checks recorded yet for this application.</p>
+            } @else {
+              <ul class="eligibility-check-list">
+                @for (c of eligibilityChecks; track c.checkId) {
+                  <li class="eligibility-check-item">
+                    <span class="badge" [ngClass]="getCheckResultClass(c.result)">{{ c.result }}</span>
+                    <span class="check-meta">Check #{{ c.checkId }} · {{ c.date }}</span>
+                    <p class="check-notes">{{ c.notes || 'No notes' }}</p>
+                  </li>
+                }
+              </ul>
+            }
+          </section>
+        }
+      </div>
+    </div>
+  </div>
+}

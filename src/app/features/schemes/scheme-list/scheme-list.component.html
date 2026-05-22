@@ -1,0 +1,127 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Schemes</h1>
+      <p class="page-subtitle">Browse welfare schemes and eligibility criteria</p>
+    </div>
+    @if (canCreate) {
+      <button class="btn btn-primary" (click)="createScheme()" id="scheme-create-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New Scheme
+      </button>
+    }
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="scheme-search"
+             [(ngModel)]="searchTerm"
+             (ngModelChange)="applyFilters()"
+             placeholder="Search schemes by title or criteria…"
+             class="form-control search-input">
+    </div>
+    <select id="scheme-filter-status"
+            [(ngModel)]="filterStatus"
+            (ngModelChange)="applyFilters()"
+            class="form-control form-select filter-select">
+      <option value="">All Status</option>
+      <option value="ACTIVE">Active</option>
+      <option value="INACTIVE">Inactive</option>
+    </select>
+  </div>
+
+  @if (loading) {
+    <app-loader />
+  } @else if (filteredSchemes.length === 0) {
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+        <rect x="9" y="3" width="6" height="4" rx="1"/>
+      </svg>
+      <h3>No schemes found</h3>
+      <p>{{ searchTerm ? 'Try adjusting your search.' : 'No schemes have been created yet.' }}</p>
+    </div>
+  } @else {
+    <div class="scheme-count">
+      Showing <strong>{{ filteredSchemes.length }}</strong> of <strong>{{ allSchemes.length }}</strong> schemes
+    </div>
+    <div class="schemes-grid">
+      @for (scheme of filteredSchemes; track scheme.schemeId) {
+        <div class="scheme-card card" (click)="viewScheme(scheme.schemeId)" [id]="'scheme-card-' + scheme.schemeId" role="button" tabindex="0">
+          <div class="card-body">
+            <div class="scheme-card-header">
+              <div class="program-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2"/>
+                </svg>
+                Program #{{ scheme.programId }}
+              </div>
+              <span class="badge" [ngClass]="getStatusClass(scheme.status)">{{ scheme.status }}</span>
+            </div>
+
+            <h3 class="scheme-title">{{ scheme.title }}</h3>
+
+            @if (scheme.description) {
+              <p class="scheme-desc">{{ scheme.description | slice:0:110 }}{{ scheme.description.length > 110 ? '…' : '' }}</p>
+            }
+
+            <div style="margin: 1rem 0; font-size: 0.9rem; color: var(--surface-600);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.25rem;"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <strong>Scheme Budget:</strong> ₹{{ scheme.budget | number }}
+            </div>
+
+            @if (canViewBudget && getProgram(scheme.programId)) {
+              <div class="budget-stats" style="margin-bottom: 1rem; padding: 0.75rem; background: var(--surface-100); border-radius: 6px; font-size: 0.85rem;">
+                <div style="margin-bottom: 0.5rem; font-weight: bold; color: var(--surface-900); border-bottom: 1px solid var(--border); padding-bottom: 0.25rem;">
+                  Program Budget Stats
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                  <span>Total Budget:</span>
+                  <strong>₹{{ getProgram(scheme.programId)?.budget | number }}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                  <span>Budget Used:</span>
+                  <strong style="color: var(--danger-600);">₹{{ getProgramBudgetUsed(scheme.programId) | number }}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 0.25rem; margin-top: 0.25rem;">
+                  <span>Budget Remaining:</span>
+                  <strong style="color: var(--success-600);">₹{{ ((getProgram(scheme.programId)?.budget || 0) - getProgramBudgetUsed(scheme.programId)) | number }}</strong>
+                </div>
+              </div>
+            }
+
+            @if (scheme.eligibilityCriteria) {
+              <div class="eligibility-box">
+                <p class="eligibility-label">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                  Eligibility Criteria
+                </p>
+                <p class="eligibility-text">{{ scheme.eligibilityCriteria | slice:0:120 }}{{ scheme.eligibilityCriteria.length > 120 ? '…' : '' }}</p>
+              </div>
+            }
+
+            <div class="scheme-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+              <span class="scheme-id">#{{ scheme.schemeId }}</span>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                @if (canCreate) {
+                  <button class="btn btn-secondary btn-sm" (click)="editScheme(scheme.schemeId, $event)">Edit</button>
+                  <button class="btn btn-danger btn-sm" (click)="deleteScheme(scheme.schemeId, $event)">Delete</button>
+                }
+                <span class="view-link">View Details →</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

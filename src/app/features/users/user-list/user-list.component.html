@@ -1,0 +1,50 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Users</h1>
+      <p class="page-subtitle">Manage all registered system users</p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <app-loader />
+  } @else if (users.length === 0) {
+    <div class="empty-state">
+      <h3>No users found</h3>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users; track user.userId) {
+            <tr>
+              <td><strong>#{{ user.userId }}</strong></td>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td><span class="badge badge-primary">{{ user.role }}</span></td>
+              <td><span class="badge" [ngClass]="user.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'">{{ user.status }}</span></td>
+              <td>{{ user.createdAt | date:'mediumDate' }}</td>
+              <td>
+                <div class="flex-gap">
+                  <button class="btn btn-secondary btn-sm" (click)="viewUser(user.userId)" [id]="'view-user-' + user.userId">View</button>
+                  <button class="btn btn-danger btn-sm" (click)="deleteUser(user.userId)" [id]="'delete-user-' + user.userId">Delete</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

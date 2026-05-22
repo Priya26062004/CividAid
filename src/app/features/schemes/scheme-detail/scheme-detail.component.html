@@ -1,0 +1,145 @@
+<div class="page-container fade-in">
+  @if (loading) {
+    <app-loader />
+  } @else if (scheme) {
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">{{ scheme.title }}</h1>
+        <p class="page-subtitle">Scheme #{{ scheme.schemeId }}</p>
+      </div>
+      <button class="btn btn-secondary" (click)="goBack()" id="scheme-detail-back">← Back to Schemes</button>
+    </div>
+
+    @if (applyMsg) {
+      <div class="alert alert-success" role="status">{{ applyMsg }}</div>
+    }
+    @if (applyError) {
+      <div class="alert alert-error" role="alert">{{ applyError }}</div>
+    }
+
+    <div class="detail-layout">
+      <!-- Main Info -->
+      <div class="detail-main">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="section-title">Scheme Details</h2>
+          </div>
+          <div class="card-body">
+            <div class="info-row">
+              <span class="info-label">Status</span>
+              <span class="badge" [ngClass]="scheme.status === 'ACTIVE' ? 'badge-success' : 'badge-neutral'">{{ scheme.status }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Scheme ID</span>
+              <span class="info-value">#{{ scheme.schemeId }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Program ID</span>
+              <span class="info-value">#{{ scheme.programId }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Created</span>
+              <span class="info-value">{{ scheme.createdAt | date:'mediumDate' }}</span>
+            </div>
+          </div>
+        </div>
+
+        @if (scheme.description) {
+          <div class="card">
+            <div class="card-header">
+              <h2 class="section-title">Description</h2>
+            </div>
+            <div class="card-body">
+              <p class="description-text">{{ scheme.description }}</p>
+            </div>
+          </div>
+        }
+
+        @if (scheme.eligibilityCriteria) {
+          <div class="card eligibility-card">
+            <div class="card-header eligibility-header">
+              <div class="eligibility-title-row">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <polyline points="9 12 11 14 15 10"/>
+                </svg>
+                <h2 class="section-title">Eligibility Criteria</h2>
+              </div>
+            </div>
+            <div class="card-body">
+              <p class="eligibility-full-text">{{ scheme.eligibilityCriteria }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Sidebar -->
+      <div class="detail-sidebar">
+        <!-- Program Info -->
+        @if (program) {
+          <div class="card program-info-card">
+            <div class="card-header">
+              <h2 class="section-title">Parent Program</h2>
+            </div>
+            <div class="card-body">
+              <h3 class="program-name">{{ program.title }}</h3>
+              <p class="program-desc">{{ program.description | slice:0:100 }}{{ (program.description?.length ?? 0) > 100 ? '…' : '' }}</p>
+              <div class="program-meta-grid">
+                <div class="meta-item">
+                  <span class="meta-label">Budget</span>
+                  <span class="meta-value">₹{{ program.budget | number }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Status</span>
+                  <span class="badge badge-success" style="font-size:0.7rem;">{{ program.status }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Start Date</span>
+                  <span class="meta-value">{{ program.startDate }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">End Date</span>
+                  <span class="meta-value">{{ program.endDate }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Apply CTA for Citizens -->
+        @if (isCitizen && scheme.status === 'ACTIVE') {
+          <div class="card apply-card">
+            <div class="card-body text-center">
+              <div class="apply-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+              </div>
+              <h3 class="apply-title">Ready to Apply?</h3>
+              <p class="apply-desc">Submit your application for this welfare program right now.</p>
+              <button class="btn btn-primary btn-lg w-full"
+                      (click)="applyNow()"
+                      [disabled]="applying"
+                      id="scheme-apply-btn">
+                @if (applying) {
+                  <div class="spinner" style="width:18px;height:18px;border-width:2px;"></div>
+                  <span>Submitting…</span>
+                } @else {
+                  Apply Now
+                }
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <h3>Scheme not found</h3>
+      <button class="btn btn-primary" (click)="goBack()">Back to Schemes</button>
+    </div>
+  }
+</div>

@@ -1,0 +1,108 @@
+.detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+.detail-main { display: flex; flex-direction: column; gap: 20px; }
+.detail-sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+.section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--surface-800);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--surface-100);
+}
+.info-row:last-child { border-bottom: none; }
+
+.info-label {
+  font-size: 0.85rem;
+  color: var(--surface-500);
+  font-weight: 500;
+}
+.info-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--surface-800);
+}
+
+.description-text {
+  font-size: 0.95rem;
+  color: var(--surface-700);
+  line-height: 1.7;
+}
+
+.eligibility-card { border-color: var(--primary-200); }
+
+.eligibility-header { background: var(--primary-50); }
+
+.eligibility-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.eligibility-title-row svg { stroke: var(--primary-600); }
+
+.eligibility-full-text {
+  font-size: 0.95rem;
+  color: var(--surface-700);
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+/* Program sidebar */
+.program-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--surface-800);
+  margin-bottom: 8px;
+}
+.program-desc {
+  font-size: 0.85rem;
+  color: var(--surface-500);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.program-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.meta-item { display: flex; flex-direction: column; gap: 3px; }
+.meta-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--surface-400);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.meta-value { font-size: 0.875rem; font-weight: 600; color: var(--surface-700); }
+
+/* Apply CTA */
+.apply-card { background: linear-gradient(135deg, var(--primary-50), var(--primary-100)); border-color: var(--primary-200); }
+.apply-icon {
+  width: 72px;
+  height: 72px;
+  background: white;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  box-shadow: var(--shadow-md);
+}
+.apply-icon svg { stroke: var(--primary-600); }
+.apply-title { font-size: 1.1rem; font-weight: 700; color: var(--surface-900); margin-bottom: 8px; }
+.apply-desc { font-size: 0.875rem; color: var(--surface-500); margin-bottom: 20px; line-height: 1.5; }
+
+@media (max-width: 900px) {
+  .detail-layout { grid-template-columns: 1fr; }
+}

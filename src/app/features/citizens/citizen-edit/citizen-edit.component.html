@@ -1,0 +1,52 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Edit Profile</h1>
+      <p class="page-subtitle">Update Citizen #{{ citizenId }}</p>
+    </div>
+    <button class="btn btn-secondary" (click)="goBack()" id="citizen-edit-back">← Back</button>
+  </div>
+
+  @if (successMsg) { <div class="alert alert-success">{{ successMsg }}</div> }
+  @if (errorMsg)   { <div class="alert alert-error">{{ errorMsg }}</div> }
+
+  <div class="card" style="max-width:700px;">
+    <div class="card-body">
+      <form [formGroup]="editForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="edit-name">Name <span style="color:var(--danger-500)">*</span></label>
+            <input type="text" id="edit-name" formControlName="name" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-dob">Date of Birth</label>
+            <input type="date" id="edit-dob" formControlName="dob" class="form-control">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-gender">Gender</label>
+            <select id="edit-gender" formControlName="gender" class="form-control form-select">
+              <option value="">Select gender</option>
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+              <option value="OTHER">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-contact">Contact Info</label>
+            <input type="text" id="edit-contact" formControlName="contactInfo" class="form-control" placeholder="Phone / email">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-address">Address</label>
+          <textarea id="edit-address" formControlName="address" class="form-control" rows="3" placeholder="Full address"></textarea>
+        </div>
+        <div class="flex-gap" style="justify-content:flex-end;">
+          <button type="button" class="btn btn-secondary" (click)="goBack()">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving || editForm.invalid" id="citizen-edit-save">
+            {{ saving ? 'Saving…' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

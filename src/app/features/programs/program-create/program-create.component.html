@@ -1,0 +1,76 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Create Program</h1>
+      <p class="page-subtitle">Add a new welfare program</p>
+    </div>
+    <button class="btn btn-secondary" (click)="goBack()" id="program-create-back">← Back</button>
+  </div>
+
+  @if (successMsg) { <div class="alert alert-success">{{ successMsg }}</div> }
+  @if (errorMsg)   { <div class="alert alert-error">{{ errorMsg }}</div> }
+
+  <div class="card" style="max-width:700px;">
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="prog-title">Title <span style="color:var(--danger-500)">*</span></label>
+          <input type="text" id="prog-title" formControlName="title"
+                 class="form-control" [class.is-invalid]="isInvalid('title')"
+                 placeholder="Program title">
+          @if (isInvalid('title')) { <div class="form-error">Title is required</div> }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="prog-desc">Description</label>
+          <textarea id="prog-desc" formControlName="description"
+                    class="form-control" rows="4" placeholder="Program description"></textarea>
+        </div>
+
+        <div class="grid-3">
+          <div class="form-group">
+            <label class="form-label" for="prog-start">Start Date <span style="color:var(--danger-500)">*</span></label>
+            <input type="date" id="prog-start" formControlName="startDate"
+                   class="form-control" [class.is-invalid]="isInvalid('startDate')">
+            @if (isInvalid('startDate')) { <div class="form-error">Required</div> }
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prog-end">End Date <span style="color:var(--danger-500)">*</span></label>
+            <input type="date" id="prog-end" formControlName="endDate"
+                   class="form-control" [class.is-invalid]="isInvalid('endDate')">
+            @if (isInvalid('endDate')) { <div class="form-error">Required</div> }
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prog-budget">Budget (₹) <span style="color:var(--danger-500)">*</span></label>
+            <input type="number" id="prog-budget" formControlName="budget"
+                   class="form-control" [class.is-invalid]="isInvalid('budget')" min="1">
+            @if (isInvalid('budget')) { <div class="form-error">Budget must be > 0</div> }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="prog-status">Status</label>
+          <select id="prog-status" formControlName="status" class="form-control form-select">
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="SUSPENDED">Suspended</option>
+          </select>
+        </div>
+
+        <div class="flex-gap" style="justify-content:flex-end;">
+          <button type="button" class="btn btn-secondary" (click)="goBack()">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-lg"
+                  [disabled]="saving || form.invalid" id="program-create-submit">
+            @if (saving) {
+              <div class="spinner" style="width:18px;height:18px;border-width:2px;"></div>
+              <span>Creating…</span>
+            } @else {
+              Create Program
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

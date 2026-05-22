@@ -1,0 +1,92 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Reports</h1>
+      <p class="page-subtitle">Generate and view system reports</p>
+    </div>
+  </div>
+
+  <!-- Generate Report -->
+  <div class="card mb-3">
+    <div class="card-header">
+      <h3 style="font-weight:700;font-size:1rem;">Generate New Report</h3>
+    </div>
+    <div class="card-body">
+      @if (genSuccess) {
+        <div class="alert alert-success" role="status">{{ genSuccess }}</div>
+      }
+      <form [formGroup]="reportForm" (ngSubmit)="generateReport()">
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="report-scope">Scope</label>
+            <select id="report-scope" formControlName="scope" class="form-control form-select">
+              <option value="CITIZEN">Citizen</option>
+              <option value="APPLICATION">Application</option>
+              <option value="PROGRAM">Program</option>
+              <option value="DISBURSEMENT">Disbursement</option>
+              <option value="COMPLIANCE">Compliance</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="report-metrics">Metrics</label>
+            <input type="text" id="report-metrics" formControlName="metrics"
+                   class="form-control" placeholder="e.g., total_count, status_summary">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary"
+                [disabled]="generating || reportForm.invalid" id="report-generate-btn">
+          @if (generating) {
+            <div class="spinner" style="width:16px;height:16px;border-width:2px;"></div>
+            <span>Generating…</span>
+          } @else {
+            Generate Report
+          }
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scope Filters -->
+  <div class="scope-filters mb-3">
+    <button class="btn btn-sm" [ngClass]="activeScope === '' ? 'btn-primary' : 'btn-secondary'"
+            (click)="loadReports()" id="filter-scope-all">All</button>
+    @for (scope of scopes; track scope) {
+      <button class="btn btn-sm" [ngClass]="activeScope === scope ? 'btn-primary' : 'btn-secondary'"
+              (click)="filterByScope(scope)" [id]="'filter-scope-' + scope">{{ scope }}</button>
+    }
+  </div>
+
+  @if (loading) {
+    <app-loader />
+  } @else if (reports.length === 0) {
+    <div class="empty-state">
+      <h3>No reports found</h3>
+      <p>Generate your first report above.</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Scope</th>
+            <th>Metrics</th>
+            <th>Generated Date</th>
+            <th>Created At</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of reports; track r.reportId) {
+            <tr>
+              <td><strong>#{{ r.reportId }}</strong></td>
+              <td><span class="badge badge-primary">{{ r.scope }}</span></td>
+              <td class="metrics-cell">{{ r.metrics }}</td>
+              <td>{{ r.generatedDate }}</td>
+              <td>{{ r.createdAt | date:'medium' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

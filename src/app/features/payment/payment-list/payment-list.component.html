@@ -1,0 +1,199 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Payment Processing</h1>
+      <p class="page-subtitle">Process payments for processed disbursements</p>
+    </div>
+  </div>
+
+  <!-- Success Alert -->
+  @if (successMessage) {
+    <div class="alert alert-success" id="payment-success-alert">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      <span>{{ successMessage }}</span>
+      <button class="alert-dismiss" (click)="dismissSuccess()" type="button">&times;</button>
+    </div>
+  }
+
+  <!-- Error Alert -->
+  @if (errorMessage) {
+    <div class="alert alert-error" id="payment-error-alert">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </svg>
+      <span>{{ errorMessage }}</span>
+      <button class="alert-dismiss" (click)="dismissError()" type="button">&times;</button>
+    </div>
+  }
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card warn">
+      <p class="stat-label">Awaiting Payment</p>
+      <p class="stat-value">{{ pendingDisbursements.length }}</p>
+    </div>
+    <div class="stat-card accent">
+      <p class="stat-label">Processed This Session</p>
+      <p class="stat-value">{{ processedCount }}</p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <app-loader />
+  } @else if (pendingDisbursements.length === 0) {
+    <div class="empty-state-card card">
+      <div class="card-body" style="padding: 60px 24px;">
+        <div class="empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--accent-500)" stroke-width="1.5">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <h3>All Caught Up!</h3>
+          <p>There are no processed disbursements awaiting payment processing.</p>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- Disbursements Table -->
+    <div class="card">
+      <div class="card-header flex-between">
+        <h3 class="section-title">Pending Payments</h3>
+        <span class="badge badge-warning" style="font-size:0.85rem;padding:6px 14px;">
+          {{ pendingDisbursements.length }} pending
+        </span>
+      </div>
+      <div class="table-container" style="border:none;border-radius:0;">
+        <table>
+          <thead>
+            <tr>
+              <th>Disbursement ID</th>
+              <th>Application ID</th>
+              <th>Citizen ID</th>
+              <th>Amount (₹)</th>
+              <th>Payment Method</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (disb of pendingDisbursements; track disb.disbursementId) {
+              <tr
+                [class.processing-row]="isProcessing(disb.disbursementId)"
+                [class.completed-row]="isCompleted(disb.disbursementId)"
+                [id]="'payment-row-' + disb.disbursementId">
+
+                <td>
+                  <strong>#{{ disb.disbursementId }}</strong>
+                  <span class="badge badge-success" style="margin-left:8px;">PROCESSED</span>
+                </td>
+                <td>{{ disb.applicationId }}</td>
+                <td>{{ disb.citizenId }}</td>
+
+                <!-- Disbursement Amount -->
+                <td>
+                  <span>₹{{ disb.amount.toLocaleString('en-IN') }}</span>
+                </td>
+
+                <!-- Payment Method -->
+                <td>
+                  @if (!isProcessing(disb.disbursementId) && !isCompleted(disb.disbursementId)) {
+                    <select
+                      class="form-control form-select method-select"
+                      [(ngModel)]="paymentMethods[disb.disbursementId]"
+                      [id]="'method-' + disb.disbursementId">
+                      <option [ngValue]="PaymentMethod.BANK">Bank Transfer</option>
+                      <option [ngValue]="PaymentMethod.WALLET">Digital Wallet</option>
+                      <option [ngValue]="PaymentMethod.CASH">Cash</option>
+                    </select>
+                  } @else {
+                    <span class="badge badge-info">{{ getMethodLabel(paymentMethods[disb.disbursementId]) }}</span>
+                  }
+                </td>
+
+                <!-- Action -->
+                <td>
+                  @if (isCompleted(disb.disbursementId)) {
+                    <span class="badge badge-success" style="padding:8px 16px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:4px;">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                      Paid
+                    </span>
+                  } @else if (isProcessing(disb.disbursementId)) {
+                    <div class="processing-indicator">
+                      <div class="spinner" style="width:20px;height:20px;border-width:2px;"></div>
+                      <span>Processing…</span>
+                    </div>
+                  } @else {
+                    <button
+                      class="btn btn-primary btn-sm"
+                      (click)="confirmProcess(disb.disbursementId)"
+                      [id]="'process-btn-' + disb.disbursementId"
+                      type="button">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 1v22M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/>
+                      </svg>
+                      Process Payment
+                    </button>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  <!-- Confirmation Modal Overlay -->
+  @if (confirmDisbId !== null) {
+    <div class="confirm-overlay" (click)="cancelConfirm()">
+      <div class="confirm-modal card fade-in" (click)="$event.stopPropagation()">
+        <div class="confirm-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--warn-500)" stroke-width="1.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+        </div>
+        <h3>Confirm Payment Processing</h3>
+        <p class="confirm-detail">
+          You are about to process payment for
+          <strong>Disbursement #{{ confirmDisbId }}</strong>
+        </p>
+        <div class="confirm-summary">
+          <div class="confirm-row">
+            <span>Amount:</span>
+            <!-- Need to get the amount from pendingDisbursements array -->
+            @for (d of pendingDisbursements; track d.disbursementId) {
+              @if (d.disbursementId === confirmDisbId) {
+                <strong>₹{{ d.amount.toLocaleString('en-IN') }}</strong>
+              }
+            }
+          </div>
+          <div class="confirm-row">
+            <span>Method:</span>
+            <strong>{{ getMethodLabel(paymentMethods[confirmDisbId]) }}</strong>
+          </div>
+        </div>
+        <p class="confirm-warning">
+          This will record the payment, update the application status to
+          <strong>DISBURSED</strong>, and notify the citizen.
+        </p>
+        <div class="confirm-actions">
+          <button class="btn btn-secondary" (click)="cancelConfirm()" type="button" id="confirm-cancel-btn">Cancel</button>
+          <button class="btn btn-primary" (click)="processPayment(confirmDisbId)" type="button" id="confirm-process-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Confirm &amp; Process
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

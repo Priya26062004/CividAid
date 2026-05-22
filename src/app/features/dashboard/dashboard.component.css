@@ -1,0 +1,68 @@
+.role-badge {
+  font-size: 0.85rem;
+  padding: 6px 14px;
+}
+
+.card-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--surface-800);
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 8px;
+}
+
+.quick-card {
+  background: var(--surface-0);
+  border: 1px solid var(--surface-200);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.quick-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-300);
+}
+
+.quick-card-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.programs-icon { background: var(--primary-50); color: var(--primary-600); }
+.programs-icon svg { stroke: var(--primary-600); }
+
+.schemes-icon { background: #f0fdf4; color: #16a34a; }
+.schemes-icon svg { stroke: #16a34a; }
+
+.apps-icon { background: #fff7ed; color: #ea580c; }
+.apps-icon svg { stroke: #ea580c; }
+
+.profile-icon { background: #faf5ff; color: #9333ea; }
+.profile-icon svg { stroke: #9333ea; }
+
+.quick-card h3 {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--surface-800);
+  margin-bottom: 6px;
+}
+
+.quick-card p {
+  font-size: 0.85rem;
+  color: var(--surface-500);
+  line-height: 1.4;
+}

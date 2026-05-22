@@ -1,0 +1,32 @@
+<div class="page-container fade-in">
+  @if (loading) {
+    <app-loader />
+  } @else if (user) {
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">User #{{ user.userId }}</h1>
+        <p class="page-subtitle">{{ user.name }}</p>
+      </div>
+      <button class="btn btn-secondary" (click)="goBack()" id="user-detail-back">← Back to Users</button>
+    </div>
+    <div class="card" style="max-width:800px;">
+      <div class="card-body">
+        <div class="detail-grid">
+          <div class="detail-item"><p class="detail-label">User ID</p><p class="detail-value">{{ user.userId }}</p></div>
+          <div class="detail-item"><p class="detail-label">Name</p><p class="detail-value">{{ user.name }}</p></div>
+          <div class="detail-item"><p class="detail-label">Email</p><p class="detail-value">{{ user.email }}</p></div>
+          <div class="detail-item"><p class="detail-label">Phone</p><p class="detail-value">{{ user.phone || 'N/A' }}</p></div>
+          <div class="detail-item"><p class="detail-label">Role</p><p class="detail-value"><span class="badge badge-primary">{{ user.role }}</span></p></div>
+          <div class="detail-item"><p class="detail-label">Status</p><p class="detail-value"><span class="badge" [ngClass]="user.status === 'ACTIVE' ? 'badge-success' : 'badge-danger'">{{ user.status }}</span></p></div>
+          <div class="detail-item"><p class="detail-label">Created At</p><p class="detail-value">{{ user.createdAt | date:'medium' }}</p></div>
+          <div class="detail-item"><p class="detail-label">Updated At</p><p class="detail-value">{{ user.updatedAt | date:'medium' }}</p></div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <h3>User not found</h3>
+      <button class="btn btn-primary" (click)="goBack()">Back to Users</button>
+    </div>
+  }
+</div>

@@ -1,0 +1,154 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Compliance &amp; Audits</h1>
+      <p class="page-subtitle">Manage compliance records and audits</p>
+    </div>
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn" [class.active]="activeTab === 'compliance'" (click)="activeTab = 'compliance'" id="comp-tab-compliance">
+      Compliance Records
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'audits'" (click)="activeTab = 'audits'" id="comp-tab-audits">
+      Audits
+    </button>
+  </div>
+
+  @if (loading) {
+    <app-loader />
+  } @else {
+
+    <!-- Compliance Records -->
+    @if (activeTab === 'compliance') {
+      @if (canCreate) {
+        <div class="card mb-3">
+          <div class="card-header"><h3 style="font-weight:700;font-size:1rem;">Create Compliance Record</h3></div>
+          <div class="card-body">
+            <form [formGroup]="compForm" (ngSubmit)="createCompliance()">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="comp-entity-id">Entity ID</label>
+                  <input type="number" formControlName="entityId" class="form-control" id="comp-entity-id">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="comp-entity-type">Entity Type</label>
+                  <select formControlName="type" class="form-control form-select" id="comp-entity-type">
+                    <option value="APPLICATION">APPLICATION</option>
+                    <option value="PROGRAM">PROGRAM</option>
+                    <option value="DISBURSEMENT">DISBURSEMENT</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="comp-result">Result</label>
+                  <select formControlName="result" class="form-control form-select" id="comp-result">
+                    <option value="PENDING">PENDING</option>
+                    <option value="COMPLIANT">COMPLIANT</option>
+                    <option value="NON_COMPLIANT">NON_COMPLIANT</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="comp-notes">Notes</label>
+                  <input type="text" formControlName="notes" class="form-control" id="comp-notes">
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary" [disabled]="compForm.invalid" id="comp-create-btn">Create Record</button>
+            </form>
+          </div>
+        </div>
+      }
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Entity ID</th><th>Type</th><th>Result</th><th>Date</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            @for (r of complianceRecords; track r.complianceId) {
+              <tr>
+                <td>#{{ r.complianceId }}</td>
+                <td>{{ r.entityId }}</td>
+                <td><span class="badge badge-info">{{ r.type }}</span></td>
+                <td><span class="badge" [ngClass]="getComplianceBadge(r.result)">{{ r.result }}</span></td>
+                <td>{{ r.date }}</td>
+                <td>{{ r.notes || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <!-- Audits -->
+    @if (activeTab === 'audits') {
+      @if (canCreate) {
+        <div class="card mb-3">
+          <div class="card-header"><h3 style="font-weight:700;font-size:1rem;">Create Audit</h3></div>
+          <div class="card-body">
+            <form [formGroup]="auditForm" (ngSubmit)="createAudit()">
+              <div class="grid-3">
+                <div class="form-group">
+                  <label class="form-label" for="audit-officer-id">Officer ID</label>
+                  <input type="number" formControlName="officerId" class="form-control" id="audit-officer-id">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="audit-user-id">User ID</label>
+                  <input type="number" formControlName="userId" class="form-control" id="audit-user-id">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="audit-citizen-id">Citizen ID</label>
+                  <input type="number" formControlName="citizenId" class="form-control" id="audit-citizen-id">
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="audit-scope">Scope</label>
+                  <input type="text" formControlName="scope" class="form-control" id="audit-scope" placeholder="e.g., APPLICATION_REVIEW">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="audit-mode">Mode of Application</label>
+                  <input type="text" formControlName="modeOfApplication" class="form-control" id="audit-mode">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="audit-findings">Findings</label>
+                <textarea formControlName="findings" class="form-control" rows="3" id="audit-findings"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" [disabled]="auditForm.invalid" id="audit-create-btn">Create Audit</button>
+            </form>
+          </div>
+        </div>
+      }
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr><th>ID</th><th>Officer</th><th>Scope</th><th>Date</th><th>Status</th>@if (canUpdateAudit) { <th>Actions</th> }</tr>
+          </thead>
+          <tbody>
+            @for (a of audits; track a.auditId) {
+              <tr>
+                <td>#{{ a.auditId }}</td>
+                <td>{{ a.officerId }}</td>
+                <td>{{ a.scope }}</td>
+                <td>{{ a.date }}</td>
+                <td><span class="badge" [ngClass]="getAuditBadge(a.status)">{{ a.status }}</span></td>
+                @if (canUpdateAudit) {
+                  <td>
+                    <div class="flex-gap">
+                      <select class="form-control form-select" style="width:auto;padding:4px 8px;font-size:0.8rem;"
+                              [(ngModel)]="auditStatusUpdates[a.auditId]" [id]="'audit-status-' + a.auditId">
+                        <option value="IN_PROGRESS">IN_PROGRESS</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="CLOSED">CLOSED</option>
+                      </select>
+                      <button class="btn btn-primary btn-sm" (click)="updateAuditStatus(a.auditId)" [id]="'audit-update-' + a.auditId">Update</button>
+                    </div>
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</div>

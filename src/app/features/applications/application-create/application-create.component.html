@@ -1,0 +1,94 @@
+<div class="page-container fade-in">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Apply for Program</h1>
+      <p class="page-subtitle">Submit a new welfare application</p>
+    </div>
+    <button class="btn btn-secondary" (click)="goBack()" id="app-create-back">← Back</button>
+  </div>
+
+  @if (successMsg) {
+    <div class="alert alert-success" role="status">{{ successMsg }}</div>
+  }
+  @if (errorMsg) {
+    <div class="alert alert-error" role="alert">{{ errorMsg }}</div>
+  }
+
+  <div class="card" style="max-width: 600px;">
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="app-citizen-id">Citizen ID <span style="color:var(--danger-500)">*</span></label>
+          <input type="number" id="app-citizen-id" formControlName="citizenId"
+                 class="form-control" [class.is-invalid]="isInvalid('citizenId')"
+                 placeholder="Your Citizen ID"
+                 [readonly]="isCitizen">
+          @if (isInvalid('citizenId')) {
+            <div class="form-error">Citizen ID is required</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="app-program-id">Program <span style="color:var(--danger-500)">*</span></label>
+          <select id="app-program-id" formControlName="programId"
+                  class="form-control form-select" [class.is-invalid]="isInvalid('programId')">
+            <option [ngValue]="null">Select a program</option>
+            @for (program of programs; track program.programId) {
+              <option [ngValue]="program.programId">
+                #{{ program.programId }} — {{ program.title }}
+              </option>
+            }
+          </select>
+          @if (isInvalid('programId')) {
+            <div class="form-error">Please select a program</div>
+          }
+          @if (programs.length === 0) {
+            <div class="form-error">No active programs available.</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="app-scheme-id">Scheme <span style="color:var(--danger-500)">*</span></label>
+          <select id="app-scheme-id" formControlName="schemeId"
+                  class="form-control form-select" [class.is-invalid]="isInvalid('schemeId')">
+            <option [ngValue]="null">-- Select a scheme --</option>
+            @for (scheme of schemes; track scheme.schemeId) {
+              <option [ngValue]="scheme.schemeId">
+                #{{ scheme.schemeId }} — {{ scheme.title }}
+              </option>
+            }
+          </select>
+          @if (isInvalid('schemeId')) {
+            <div class="form-error">Please select a scheme</div>
+          }
+          @if (schemes.length === 0 && form.get('programId')?.value) {
+            <div class="form-error">No schemes available for this program.</div>
+          }
+          @if (!form.get('programId')?.value) {
+            <div style="font-size: 0.8rem; color: var(--surface-400); margin-top: 0.25rem;">
+              Select a program first to see available schemes.
+            </div>
+          }
+          @if (isSchemeAlreadyApplied(form.get('schemeId')?.value)) {
+            <div class="alert alert-warning" style="margin-top: 0.75rem; padding: 0.75rem; background: #fff3cd; border: 1px solid #ffc107; border-radius: 6px; color: #856404;">
+              ⚠️ You have already applied for this scheme. Please select a different scheme.
+            </div>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="goBack()">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-lg"
+                  [disabled]="saving || form.invalid || isSchemeAlreadyApplied(form.get('schemeId')?.value)" id="app-create-submit">
+            @if (saving) {
+              <div class="spinner" style="width:18px;height:18px;border-width:2px;"></div>
+              <span>Submitting…</span>
+            } @else {
+              Submit Application
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
