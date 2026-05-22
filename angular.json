@@ -2,11 +2,12 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "cbe7b50f-dd01-4e62-b7ab-75e778d7bf63"
   },
   "newProjectRoot": "projects",
   "projects": {
-    "Frontend": {
+    "welfare-portal": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -26,7 +27,8 @@
             ],
             "styles": [
               "src/styles.css"
-            ]
+            ],
+            "polyfills": ["zone.js"]
           },
           "configurations": {
             "production": {
@@ -56,10 +58,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "Frontend:build:production"
+              "buildTarget": "welfare-portal:build:production"
             },
             "development": {
-              "buildTarget": "Frontend:build:development"
+              "buildTarget": "welfare-portal:build:development"
             }
           },
           "defaultConfiguration": "development"
