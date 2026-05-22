@@ -4,7 +4,7 @@ import { roleGuard } from './core/guards/role.guard';
 import { guestGuard } from './core/guards/guest.guard';
 import { Role } from './core/models/role.enum';
 //means that when user tries to access a route, the authGuard will check if they are authenticated. If not, they will be redirected to the login page. If they are authenticated but do not have the required role, they will be redirected to the unauthorized page.
-export const routes: Routes = [ 
+export const routes: Routes = [
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' }, //means that when user accesses the root URL, they will be redirected to the login page.
   {
     path: 'auth',
@@ -12,7 +12,7 @@ export const routes: Routes = [
     canActivate: [guestGuard] //what is canActivate? It is a way to protect routes. In this case, the guestGuard will check if the user is already authenticated. If they are, they will be redirected to the dashboard page. This prevents authenticated users from accessing the login and register pages.
   },
   {
-    path: 'dashboard', 
+    path: 'dashboard',
     loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [authGuard] //means that when user tries to access the dashboard route, the authGuard will check if they are authenticated. If not, they will be redirected to the login page.
   },
