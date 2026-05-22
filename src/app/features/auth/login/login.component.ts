@@ -46,6 +46,11 @@ export class LoginComponent {
           this.authService.setUserId(response.userId);
           console.log('Login response included userId:', response.userId);
         }
+        const cleanRole = response.role.replace('ROLE_', '');
+        if (cleanRole === Role.CITIZEN && response.userId) {
+          this.ensureCitizenProfile(response.userId, undefined, undefined, response.email);
+          return;
+        }
 
         this.resolveUserId(response.email, response.role);
       },
@@ -71,17 +76,7 @@ export class LoginComponent {
           const cleanRole = role.replace('ROLE_', '');
           console.log('Clean role:', cleanRole); 
           if (cleanRole === Role.CITIZEN) {
-            this.citizenService.getCitizenByUserId(match.userId).subscribe({
-              next: (citizen) => {
-                this.authService.setCitizenId(citizen.citizenId);
-                this.router.navigate(['/citizens']);
-                this.loading = false;
-              },
-              error: () => {
-                this.router.navigate(['/citizens']); //means that if there is an error fetching the citizen data, we still redirect to the citizens page
-                this.loading = false;
-              }
-            });
+            this.ensureCitizenProfile(match.userId, match.name, match.phone, match.email);
             return;
           }
         }
@@ -96,6 +91,63 @@ export class LoginComponent {
           this.router.navigate(['/dashboard']);
         }
         this.loading = false;
+      }
+    });
+  }
+
+  private ensureCitizenProfile(userId: number, name?: string, phone?: string, email?: string): void {
+    this.citizenService.getCitizenByUserId(userId).subscribe({
+      next: (citizen) => {
+        this.authService.setCitizenId(citizen.citizenId);
+        this.router.navigate(['/citizens']);
+        this.loading = false;
+      },
+      error: () => {
+        const fallbackName = name ?? (email ? email.split('@')[0] : 'Citizen');
+        if (name || phone || email) {
+          const createRequest = {
+            name: fallbackName,
+            contactInfo: phone,
+            userId
+          };
+          this.citizenService.createCitizen(createRequest).subscribe({
+            next: (created) => {
+              this.authService.setCitizenId(created.citizenId);
+              this.router.navigate(['/citizens']);
+              this.loading = false;
+            },
+            error: () => {
+              this.router.navigate(['/citizens']);
+              this.loading = false;
+            }
+          });
+          return;
+        }
+
+        this.userService.getUserById(userId).subscribe({
+          next: (user) => {
+            const createRequest = {
+              name: user.name,
+              contactInfo: user.phone,
+              userId
+            };
+            this.citizenService.createCitizen(createRequest).subscribe({
+              next: (created) => {
+                this.authService.setCitizenId(created.citizenId);
+                this.router.navigate(['/citizens']);
+                this.loading = false;
+              },
+              error: () => {
+                this.router.navigate(['/citizens']);
+                this.loading = false;
+              }
+            });
+          },
+          error: () => {
+            this.router.navigate(['/citizens']);
+            this.loading = false;
+          }
+        });
       }
     });
   }

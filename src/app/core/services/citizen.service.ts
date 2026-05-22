@@ -21,7 +21,7 @@ export class CitizenService {
   }
 
   createCitizen(request: CitizenRequest): Observable<CitizenResponse> {
-    return this.http.post<CitizenResponse>(this.citizenUrl, request);
+    return this.http.post<CitizenResponse>(`${this.citizenUrl}/register`, request);
   }
 
   getAllCitizens(): Observable<CitizenResponse[]> {
